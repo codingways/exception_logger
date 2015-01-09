@@ -9,6 +9,10 @@ class CreateExceptionLoggerLoggedExceptions < ActiveRecord::Migration
       t.text :environment
       t.text :request
       t.datetime :created_at
+      t.integer :user_id
+      t.integer :exception_importance_id
+      t.datetime :resolved_at
+      t.integer :resolved_by
     end
   end
 end

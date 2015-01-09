@@ -1,23 +1,27 @@
 module ExceptionLogger
   class LoggedException < ActiveRecord::Base
     self.table_name = "logged_exceptions"
-    HOSTNAME = `hostname -s`.chomp
-    class << self
-      def create_from_exception(controller, exception, data)
-        message = exception.message.inspect
-        message << "\n* Extra Data\n\n#{data}" unless data.blank?
-        e = create! \
-          :exception_class => exception.class.name,
-          :controller_name => controller.controller_path,
-          :action_name     => controller.action_name,
-          :message         => message,
-          :backtrace       => exception.backtrace,
-          :request         => controller.request
-      end
+    
+    belongs_to :user
+    belongs_to :exception_importance
 
-      def host_name
-        HOSTNAME
-      end
+    HOSTNAME = `hostname -s`.chomp
+    
+    def self.create_from_exception(controller, exception, data, user)
+      message = exception.message.inspect
+      message << "#{data}" unless data.blank?
+      e = create! \
+        :exception_class => exception.class.name,
+        :controller_name => controller.controller_path,
+        :action_name     => controller.action_name,
+        :message         => message,
+        :backtrace       => exception.backtrace,
+        :request         => controller.request,
+        :user_id         => user.try(:id)
+    end
+
+    def self.host_name
+      HOSTNAME
     end
 
     scope :by_exception_class, lambda {|exception_class| where(:exception_class => exception_class)}
@@ -58,6 +62,19 @@ module ExceptionLogger
 
     def controller_action
       @controller_action ||= "#{controller_name.camelcase}/#{action_name}"
+    end
+
+    def time_ago
+      difference = TimeDifference.between(self.created_at, Time.now)
+      minutes, hours, days = difference.in_minutes, difference.in_hours, difference.in_days
+
+      return "#{minutes.truncate} minutes" if minutes < 60
+      return "#{hours.truncate} hours" if hours < 24
+      return "#{days.truncate} days" 
+    end
+
+    def exception_origin
+      self.exception_class == "NoMethodError" ? "Server" : "Client"
     end
 
     def self.class_names
