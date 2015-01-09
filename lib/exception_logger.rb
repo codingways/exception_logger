@@ -54,7 +54,7 @@ module ExceptionLogger
       super
     end
 
-    def log_exception(exception)
+    def log_exception(exception, user)
       deliverer = self.class.exception_data
       data = case deliverer
       when nil    then {}
@@ -62,7 +62,7 @@ module ExceptionLogger
       when Proc   then deliverer.call(self)
       end
 
-      LoggedException.create_from_exception(self, exception, data)
+      LoggedException.create_from_exception(self, exception, data, user)
     end
   end
 end
