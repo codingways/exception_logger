@@ -36,6 +36,10 @@ module ExceptionLogger
       "#{self.exception_class} in #{self.controller_action}"
     end
 
+    def due_date
+      self.created_at + self.exception_importance.value.minutes if self.exception_importance
+    end
+
     def backtrace=(trace)
       trace = sanitize_backtrace(trace) * "\n" unless trace.is_a?(String)
       write_attribute :backtrace, trace
