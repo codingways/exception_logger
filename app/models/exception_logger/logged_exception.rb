@@ -90,6 +90,12 @@ module ExceptionLogger
       select("DISTINCT controller_name, action_name").order(:controller_name,:action_name).collect(&:controller_action)
     end
 
+    def css_class
+      return "exception_resolved" if self.resolved_at
+      return "exception_not_assigned" if self.assigned_to.nil?
+      return "exception_pending"
+    end
+
     private
     @@rails_root      = Pathname.new(Rails.root).cleanpath.to_s
     @@backtrace_regex = /^#{Regexp.escape(@@rails_root)}/

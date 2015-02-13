@@ -13,6 +13,7 @@ class CreateExceptionLoggerLoggedExceptions < ActiveRecord::Migration
       t.integer :exception_importance_id
       t.datetime :resolved_at
       t.integer :resolved_by
+      t.integer :assigned_to
     end
   end
 end
