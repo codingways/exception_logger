@@ -73,8 +73,8 @@ module ExceptionLogger
       difference = TimeDifference.between(self.created_at, Time.now)
       minutes, hours, days = difference.in_minutes, difference.in_hours, difference.in_days
 
-      return "#{minutes.truncate} minutes" if minutes < 60
-      return "#{hours.truncate} hours" if hours < 24
+      return "#{minutes.truncate} min" if minutes < 60
+      return "#{hours.truncate} hrs" if hours < 24
       return "#{days.truncate} days" 
     end
 
