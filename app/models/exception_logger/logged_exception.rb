@@ -4,7 +4,7 @@ module ExceptionLogger
     
     belongs_to :user
     belongs_to :exception_importance
-    has_many :exception_notes
+    has_many :exception_notes, dependent: :destroy
 
     HOSTNAME = `hostname -s`.chomp
     
