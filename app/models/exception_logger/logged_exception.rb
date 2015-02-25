@@ -33,6 +33,11 @@ module ExceptionLogger
     scope :days_old, lambda {|day_number| where('created_at >= ?', day_number.to_f.days.ago.utc)}
     scope :sorted, lambda { order('created_at DESC') }
 
+    scope :from_subdomain, -> (subdomain) {
+      establish_connection "#{subdomain}_#{Rails.env}"
+      ExceptionLogger::LoggedException.all
+    }
+
     def name
       "#{self.exception_class} in #{self.controller_action}"
     end
